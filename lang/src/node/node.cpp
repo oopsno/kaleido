@@ -1,6 +1,5 @@
 #include "node.hpp"
 
-
 namespace kaleido {
 
 //constexpr explicit operator const char *(const node_type_t type) {
@@ -28,33 +27,5 @@ Node::Node() {
 Node::Node(const node_type_t tp) {
   node_type = tp;
 }
-
-Type::Type() {
-  node_type = type;
-}
-
-Identifier::Identifier(std::string &id) : id(id) {
-  node_type = identifier;
-}
-
-AExp::AExp() {
-  node_type = undef;
-  aexp_type = aexp_undef;
-}
-
-AExp::AExp(Identifier &id) {
-  node_type = aexp;
-  aexp_type = aexp_id;
-}
-
-AExp::~AExp() {
-  if (left != nullptr) {
-    delete(left);
-  }
-  if (right != nullptr) {
-    delete(right);
-  }
-}
-
 
 }

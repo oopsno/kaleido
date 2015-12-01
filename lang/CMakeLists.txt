@@ -9,6 +9,8 @@ find_package(bison)
 
 include_directories(include gen)
 
-add_subdirectory(lib)
+file(GLOB NODE_SRC "src/node/*.cpp")
+add_library(lib-node ${NODE_SRC})
+
 add_subdirectory(test)
 
