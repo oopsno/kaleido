@@ -14,7 +14,6 @@
 %}
 
 %option noyywrap nounput batch debug noinput
-%option outfile="lexer.cpp" header-file="lexer.hpp"
 
 id    [a-zA-Z][a-zA-Z_0-9]*
 int   [0-9]+

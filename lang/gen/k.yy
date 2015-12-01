@@ -7,8 +7,6 @@
 %define api.value.type variant
 %define parse.assert
 
-%output "parser.cpp"
-
 %code requires
 {
 #include <string>
