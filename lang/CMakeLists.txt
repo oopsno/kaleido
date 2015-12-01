@@ -14,6 +14,7 @@ flex_target(gen "gen/k.ll" ${CMAKE_CURRENT_SOURCE_DIR}/gen/lexer.cpp)
 
 file(GLOB NODE_SRC "src/node/*.cpp")
 
+add_library(lib-err src/error.cpp)
 add_library(lib-node ${NODE_SRC})
 add_library(lib-parser src/driver.cpp ${BISON_gen_OUTPUT_SOURCE} ${FLEX_gen_OUTPUTS})
 add_library(lib-scope src/scope.cpp)

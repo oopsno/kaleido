@@ -2,11 +2,18 @@
 #define KALEIDO_ERROR_HPP
 
 #include <stdexcept>
+#include <string>
+#include "location.hh"
 
 namespace kaleido {
 
-class KaleidoException: std::exception {
+class KaleidoException: std::exception { };
 
+class SyntaxError: KaleidoException {
+  SyntaxError();
+  SyntaxError(std::string& information);
+  parser::location *loc = nullptr;
+  std::string information;
 };
 
 }
