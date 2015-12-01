@@ -5,10 +5,11 @@
 
 namespace kaleido {
 
-class Identifier: Node {
+class Identifier: public Node {
  public:
+  Identifier();
   Identifier(std::string &id);
-  std::string id;
+  std::string value;
 };
 
 }

@@ -6,6 +6,6 @@ using namespace kaleido;
 
 int main() {
   parser::KaleidoDriver driver;
-  cout << "Not yet" << endl;
+  driver.parse()
   return 0;
 }

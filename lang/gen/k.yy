@@ -46,13 +46,27 @@ class KaleidoDriver;
     SLASH   "/"
     LPAREN  "("
     RPAREN  ")"
+    FOR     "for"
+    FROM    "from"
+    TO      "to"
+    STEP    "step"
+    SET     "set"
 ;
 
 %token <std::string> IDENTIFIER "identifier"
 %token <double>      FLOAT
 %token <int64_t>     INTEGER
 
-%type <AExp> aexp;
+%type <AExp>       aexp;
+%type <Identifier> id;
+%type <Stmt>       stmt;
+%type <Call>       call;
+%type <Assign>     assign;
+%type <Block>      block;
+%type <Loop>       loop;
+%type < std::vector<Stmt> > stmts;
+%type < std::vector<AExp> > arg_list;
+
 
 %%
 
@@ -67,8 +81,8 @@ imp : "import" module_name
 
 module_decl : "module" module_name
 
-module_name : IDENTIFIER
-            | module_name "." IDENTIFIER
+module_name : id
+            | module_name '.' id
 
 top_stmts : top_stmt
           | top_stmts top_stmt
@@ -76,51 +90,48 @@ top_stmts : top_stmt
 top_stmt : defun
          | stmt
 
-defun : "def" IDENTIFIER "(" decl_list ")" block
+defun : "def" id '(' decl_list ')' block
 
-stmts : stmt
-      | stmts stmt
+stmts : stmt       { $$ = std::vector<Stmt>(); $$.push_back($1); }
+      | stmts stmt { $1.push_back($2); std::swap($$, $1); }
+      | %empty     { $$ = std::vector<Stmt>(); }
 
-stmt : call
-     | assign
-
-call : IDENTIFIER "(" param_list ")"
-
-param_list : param
-           | param_list "," param
-           | 
-
-param : IDENTIFIER
+stmt : call   { $$ = Stmt(Stmt::stmt_call,   &$1); }
+     | assign { $$ = Stmt(Stmt::stmt_assign, &$1); }
+     | loop   { $$ = Stmt(Stmt::stmt_loop,   &$1); }
+     | block  { $$ = Stmt(Stmt::stmt_block,  &$1); }
 
 decl_list : decl
-          | decl_list "," decl
-          |   
+          | decl_list ',' decl
+          | %empty
 
-decl : IDENTIFIER IDENTIFIER
+decl : id id 
 
-block : '{' stmts '}' 
+block : '{' stmts '}' { $$ = Block($2); }
 
-assign : lval '=' rval
-       | "set" lval rval
+assign : id '=' aexp { $$ = Assign($1, $3); }
+       | SET id aexp { $$ = Assign($2, $3); }
 
-lval : IDENTIFIER
-rval : IDENTIFIER
-     | call
-     | literal
-     | aexp
-
-literal : INTEGER
-        | FLOAT
+loop : FOR id FROM aexp TO aexp STEP aexp stmt { $$ = Loop($2, $4, $6, $8, &$9); }
 
 %left '+' '-';
 %left '*' '/';
-aexp : aexp '+' aexp  
-     | aexp '-' aexp  
-     | aexp '*' aexp  
-     | aexp '/' aexp  
+aexp : aexp '+' aexp { $$ = AExp(AExp::aexp_add, $1, $3); } 
+     | aexp '-' aexp { $$ = AExp(AExp::aexp_sub, $1, $3); } 
+     | aexp '*' aexp { $$ = AExp(AExp::aexp_mul, $1, $3); }
+     | aexp '/' aexp { $$ = AExp(AExp::aexp_div, $1, $3); }
      | '(' aexp ')'  { std::swap($$, $2); }
-     | IDENTIFIER    { auto id = Identifier($1); $$ = AExp(id); }
-/*     | literal        */
+     | id            { $$ = AExp($1); }
+     | INTEGER       { $$ = AExp($1); }
+     | FLOAT         { $$ = AExp($1); }
+
+call : id '(' arg_list ')' { $$ = Call($1, $3); }
+
+arg_list : aexp              { $$ = std::vector<AExp>(); $$.push_back($1); }
+         | arg_list ',' aexp { $1.push_back($3); std::swap($$, $1); }
+         | %empty            { $$ = std::vector<AExp>(); }
+
+id : IDENTIFIER      { $$ = Identifier($1); }
 
 %%
 

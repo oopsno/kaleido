@@ -18,13 +18,19 @@ class AExp: Node {
 
   AExp();
   AExp(Identifier &id);
+  AExp(int64_t ival);
+  AExp(double  fval);
+  AExp(aexp_operator_t, AExp& node);
+  AExp(aexp_operator_t op, AExp& left, AExp& right);
   ~AExp();
-  static AExp add(AExp *left, AExp *right);
  private:
   aexp_type_t aexp_type;
   aexp_operator_t aexp_operator;
   AExp *left = nullptr;
   AExp *right = nullptr;
+  std::string *identifier_name;
+  int64_t ival;
+  double  fval;
 };
 
 }

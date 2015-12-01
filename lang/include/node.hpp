@@ -6,5 +6,6 @@
 #include "node/type.hpp"
 #include "node/decl.hpp"
 #include "node/aexp.hpp"
+#include "node/stmt.hpp"
 
 #endif //KALEIDO_NODE_HPP
