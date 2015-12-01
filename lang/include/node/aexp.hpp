@@ -6,7 +6,7 @@
 
 namespace kaleido {
 
-class AExp: Node {
+class AExp: public Node {
  public:
   typedef enum {
     aexp_id, aexp_binary, aexp_unary, aexp_imm, aexp_undef
@@ -28,7 +28,7 @@ class AExp: Node {
   aexp_operator_t aexp_operator;
   AExp *left = nullptr;
   AExp *right = nullptr;
-  std::string *identifier_name;
+  std::string *identifier_name = nullptr;
   int64_t ival;
   double  fval;
 };

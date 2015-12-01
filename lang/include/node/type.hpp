@@ -5,7 +5,7 @@
 
 namespace kaleido {
 
-class Type: Node {
+class Type: public Node {
   Type();
 };
 

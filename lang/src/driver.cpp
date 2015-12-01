@@ -15,8 +15,19 @@ KaleidoDriver::KaleidoDriver() {
 
 KaleidoDriver::~KaleidoDriver() { }
 
-int KaleidoDriver::parse(const std::string &f) {
+int KaleidoDriver::parse_file(const std::string &f) {
   file = f;
+  scan_begin();
+  parser::KaleidoParser parser(*this);
+  parser.set_debug_level(trace_parsing);
+  int res = parser.parse();
+  scan_end();
+  return res;
+}
+
+int KaleidoDriver::parse(const std::string &literal) {
+  file = "<LITERAL>";
+  parse_on_the_fly = true;
   scan_begin();
   parser::KaleidoParser parser(*this);
   parser.set_debug_level(trace_parsing);

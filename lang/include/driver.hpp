@@ -17,12 +17,15 @@ class KaleidoDriver {
   KaleidoDriver();
   virtual ~KaleidoDriver();
   Scope global;
-  Node result;
+  Loop result;
   void scan_begin();
   void scan_end();
   bool trace_scanning;
-  int parse(const std::string &f);
+  int parse_file(const std::string &f);
+  int parse(const std::string &literal);
   std::string file;
+  bool parse_on_the_fly = false;
+  std::string code;
   bool trace_parsing;  // Error handling.
   void error(const parser::location &l, const std::string &m);
   void error(const std::string &m);

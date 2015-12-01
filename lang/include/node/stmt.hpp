@@ -7,7 +7,7 @@
 
 namespace kaleido {
 
-class Stmt: Node {
+class Stmt: public Node {
  public:
   typedef enum {
     stmt_loop, stmt_call, stmt_assign, stmt_block, stmt_stmts,

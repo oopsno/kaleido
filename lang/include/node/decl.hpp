@@ -6,7 +6,7 @@
 
 namespace kaleido {
 
-class Decl: Node {
+class Decl: public Node {
  public:
   Decl(Type &type, Identifier &id);
   Type type;
