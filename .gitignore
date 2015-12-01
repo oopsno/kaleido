@@ -263,3 +263,10 @@ com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
 
+
+# bison/flex staff
+lang/gen/*.hpp
+lang/gen/*.cpp
+lang/gen/*.hh
+lang/gen/*.cc
+

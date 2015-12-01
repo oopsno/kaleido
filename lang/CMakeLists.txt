@@ -7,6 +7,8 @@ set(CMAKE_CXX_STANDARD 14)
 find_package(flex)
 find_package(bison)
 
-include_directories(include)
+include_directories(include gen)
 
 add_subdirectory(lib)
+add_subdirectory(test)
+
