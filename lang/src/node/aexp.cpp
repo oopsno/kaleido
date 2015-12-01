@@ -10,7 +10,7 @@ AExp::AExp() {
 AExp::AExp(Identifier &id) {
   node_type = aexp;
   aexp_type = aexp_id;
-  identifier_name = new std::string(id.value);
+  identifier_name = id.value;
 }
 
 AExp::AExp(int64_t ival) {
@@ -40,15 +40,20 @@ AExp::AExp(aexp_operator_t op, AExp &left, AExp &right) {
   this->right = new AExp(right);
 }
 
+AExp::AExp(Identifier &func, std::vector<AExp> &args) {
+  node_type = aexp;
+  aexp_type = aexp_call;
+  function_name = func.value;
+  args = args;
+}
+
 AExp::~AExp() {
+  // TODO 重写一个安全的拷贝构造函数
   if (left != nullptr) {
-    delete (left);
+//    delete (left);
   }
   if (right != nullptr) {
-    delete (right);
-  }
-  if (identifier_name != nullptr) {
-    delete (identifier_name);
+//    delete (right);
   }
 }
 

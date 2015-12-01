@@ -14,11 +14,13 @@ Block::Block(std::vector<Stmt> &stmts)
   stmt_type = stmt_block;
 }
 
-Call::Call() { }
+RawAExp::RawAExp() {
+  stmt_type = stmt_aexp;
+}
 
-Call::Call(Identifier &func, std::vector<AExp> &args)
-    : function_name(func.value), args(args) {
-  stmt_type = stmt_call;
+RawAExp::RawAExp(AExp &exp) {
+  stmt_type = stmt_aexp;
+  this->exp = exp;
 }
 
 Loop::Loop() { }
@@ -35,5 +37,39 @@ Assign::Assign(Identifier &slot, AExp &value)
     : slot(slot.value), value(value) {
   stmt_type = stmt_assign;
 }
+
+Decl::Decl() {
+  node_type = decl;
+  stmt_type = stmt_decl;
+}
+
+Decl::Decl(Type &type, Identifier &id)
+    : type(type), id(id.value) {
+  node_type = decl;
+  stmt_type = stmt_decl;
+}
+
+Defun::Defun() { }
+
+Defun::Defun(Identifier &id, std::vector<Decl> &decls, Block &block)
+    : name(id.value), decls(decls), block(block) { }
+
+ModDecl::ModDecl() { }
+
+ModDecl::ModDecl(std::string &name)
+    : name(name) { }
+
+Import::Import() { }
+
+Import::Import(std::string &name)
+    : name(name) { }
+
+ModDef::ModDef() { }
+
+ModDef::ModDef(std::vector<Stmt> &stmts)
+    : stmts(stmts) { }
+
+ModDef::ModDef(std::string &name, std::vector<Import> &imps, std::vector<Stmt> &stmts)
+    : name(name), stmts(stmts), imports(imps) { }
 
 }

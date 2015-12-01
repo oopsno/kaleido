@@ -17,7 +17,7 @@ class KaleidoDriver {
   KaleidoDriver();
   virtual ~KaleidoDriver();
   Scope global;
-  Loop result;
+  ModDef result;
   void scan_begin();
   void scan_end();
   bool trace_scanning;
