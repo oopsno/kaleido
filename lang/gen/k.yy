@@ -96,7 +96,7 @@ module_def : module_decl imports top_stmts { $$ = ModDef($1.name, $2, $3); }
            | top_stmts                     { $$ = ModDef($1); }
 
 imports : import { $$ = std::vector<Import>(); $$.push_back($1); }
-        | imports import { $1.push_back($2); std::swap($$, $1); }
+        | imports import { $1.push_back($2); $$ = $1; }
         | %empty { $$ = std::vector<Import>(); }
 
 import : "import" module_name { $$ = Import($2); }
@@ -107,7 +107,7 @@ module_name : id                 { $$ = $1.value; }
             | module_name "." id { $$ = $1 + $3.value; }
 
 top_stmts : top_stmt { $$ = std::vector<Stmt>(); $$.push_back($1); }
-          | top_stmts top_stmt { $1.push_back($2); std::swap($$, $1); }
+          | top_stmts top_stmt { $1.push_back($2); $$ = $1; }
           | %empty   { $$ = std::vector<Stmt>(); }
 
 top_stmt : defun   { $$ = Stmt(Stmt::stmt_defun, &$1); }
@@ -116,7 +116,7 @@ top_stmt : defun   { $$ = Stmt(Stmt::stmt_defun, &$1); }
 defun : "def" id "(" decl_list ")" block { $$ = Defun($2, $4, $6); }
 
 stmts : stmt       { $$ = std::vector<Stmt>(); $$.push_back($1); }
-      | stmts stmt { $1.push_back($2); std::swap($$, $1); }
+      | stmts stmt { $1.push_back($2); $$ = $1; }
       | %empty     { $$ = std::vector<Stmt>(); }
 
 stmt : rawaexp { $$ = Stmt(Stmt::stmt_aexp,   &$1); }
@@ -130,7 +130,7 @@ block : "{" stmts "}" { $$ = Block($2); }
 rawaexp : aexp { $$ = RawAExp($1); }
 
 decl_list : decl               { $$ = std::vector<Decl>(); $$.push_back($1); }
-          | decl_list "," decl { $1.push_back($3); std::swap($$, $1); }
+          | decl_list "," decl { $1.push_back($3); $$ = $1; }
           | %empty             { $$ = std::vector<Decl>(); }
 
 decl : type_spec id            { $$ = Decl($1, $2); }
@@ -143,7 +143,7 @@ type_spec : "int"                     { $$ = Type(Type::type_int); }
 
 type_spec_list
     : type_spec { $$ = std::vector<Type>(); $$.push_back($1); }
-    | type_spec_list "," type_spec { $1.push_back($3); std::swap($$, $1); }
+    | type_spec_list "," type_spec { $1.push_back($3); $$ = $1; }
     | %empty  { $$ = std::vector<Type>(); }
 
 assign : id "=" aexp { $$ = Assign($1, $3); }
@@ -155,7 +155,7 @@ loop : FOR id FROM aexp TO aexp STEP aexp stmt { $$ = Loop($2, $4, $6, $8, &$9);
 %left "*" "/";
 
 atom : id            { $$ = AExp($1); }
-     | "(" aexp ")"  { std::swap($$, $2); }
+     | "(" aexp ")"  { $$ = $2; }
      | INTEGER       { $$ = AExp($1); }
      | FLOAT         { $$ = AExp($1); }
      | call          { $$ = $1; }
@@ -173,7 +173,7 @@ aexp : term          { $$ = $1; }
 call : id "(" arg_list ")" { $$ = AExp($1, $3); }
 
 arg_list : aexp              { $$ = std::vector<AExp>(); $$.push_back($1); }
-         | arg_list "," aexp { $1.push_back($3); std::swap($$, $1); }
+         | arg_list "," aexp { $1.push_back($3); $$ = $1; }
          | %empty            { $$ = std::vector<AExp>(); }
 
 id : IDENTIFIER      { $$ = Identifier($1); }
