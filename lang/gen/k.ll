@@ -17,6 +17,7 @@
 
 id    [a-zA-Z][a-zA-Z_0-9]*
 int   [0-9]+
+float [0-9]+\.[0-9]+
 blank [ \t]
 semi  ;
 
@@ -46,19 +47,29 @@ semi  ;
 ")"      { return kaleido::parser::KaleidoParser::make_RPAREN(loc); }
 "{"      { return kaleido::parser::KaleidoParser::make_LBRACE(loc); }
 "}"      { return kaleido::parser::KaleidoParser::make_RBRACE(loc); }
-","      { return kaleido::parser::KaleidoParser::make_COMMA(loc); }
+","      { return kaleido::parser::KaleidoParser::make_COMMA(loc);  }
 "for"    { return kaleido::parser::KaleidoParser::make_FOR(loc);    }
 "from"   { return kaleido::parser::KaleidoParser::make_FROM(loc);   }
 "to"     { return kaleido::parser::KaleidoParser::make_TO(loc);     }
 "step"   { return kaleido::parser::KaleidoParser::make_STEP(loc);   }
 "set"    { return kaleido::parser::KaleidoParser::make_SET(loc);    }
+"import" { return kaleido::parser::KaleidoParser::make_IMPORT(loc); }
+"module" { return kaleido::parser::KaleidoParser::make_MODULE(loc); }
+"def"    { return kaleido::parser::KaleidoParser::make_DEF(loc);    }
+"i64"    { return kaleido::parser::KaleidoParser::make_I64(loc);    }
+"f64"    { return kaleido::parser::KaleidoParser::make_F64(loc);    }
+"return" { return kaleido::parser::KaleidoParser::make_RET(loc);    }
 
 
 {int}    { errno = 0;
-           long n = strtol (yytext, NULL, 10);
+           int64_t n = strtol (yytext, NULL, 10);
            if (! (INT_MIN <= n && n <= INT_MAX && errno != ERANGE))
               driver.error (loc, "integer is out of range");
            return kaleido::parser::KaleidoParser::make_INTEGER(n, loc);
+         }
+{float}  { errno = 0;
+           double n = strtod (yytext, NULL);
+           return kaleido::parser::KaleidoParser::make_FLOAT(n, loc);
          }
 {id}     { return kaleido::parser::KaleidoParser::make_IDENTIFIER(yytext, loc); }
 .        { driver.error (loc, "invalid character"); }

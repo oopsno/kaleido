@@ -54,6 +54,12 @@ class KaleidoDriver;
     TO      "to"
     STEP    "step"
     SET     "set"
+    IMPORT  "import"
+    MODULE  "module"
+    DEF     "def"
+    I64     "f64"
+    F64     "i64"
+    RET     "return"
 ;
 
 %token <std::string> IDENTIFIER "identifier"
@@ -62,6 +68,7 @@ class KaleidoDriver;
 
 
 %type <AExp>       atom;
+%type <AExp>       factor;
 %type <AExp>       term;
 %type <AExp>       aexp;
 %type <Identifier> id;
@@ -78,6 +85,7 @@ class KaleidoDriver;
 %type <Import>     import;
 %type <ModDecl>    module_decl;
 %type <ModDef>     module_def;
+%type <Return>     return;
 %type < std::vector<Import> > imports;
 %type < std::vector<Decl> > decl_list;
 %type < std::vector<Type> > type_spec_list;
@@ -95,28 +103,25 @@ kaleido : module_def { driver.result = $1; }
 module_def : module_decl imports top_stmts { $$ = ModDef($1.name, $2, $3); }
            | top_stmts                     { $$ = ModDef($1); }
 
-imports : import { $$ = std::vector<Import>(); $$.push_back($1); }
-        | imports import { $1.push_back($2); $$ = $1; }
+imports : import imports { $2.push_back($1); $$ = $2; }
         | %empty { $$ = std::vector<Import>(); }
 
 import : "import" module_name { $$ = Import($2); }
 
 module_decl : "module" module_name { $$ = ModDecl($2); }
 
-module_name : id                 { $$ = $1.value; }
-            | module_name "." id { $$ = $1 + $3.value; }
+module_name : module_name "." id { $$ = $3 + $1.value; }
+            | id                 { $$ = $1; }
 
-top_stmts : top_stmt { $$ = std::vector<Stmt>(); $$.push_back($1); }
-          | top_stmts top_stmt { $1.push_back($2); $$ = $1; }
-          | %empty   { $$ = std::vector<Stmt>(); }
+top_stmts : top_stmt top_stmts { $2.push_back($1); $$ = $2; }
+          | %empty { $$ = std::vector<Stmt>(); }
 
 top_stmt : defun   { $$ = Stmt(Stmt::stmt_defun, &$1); }
-         | stmt    { $$ = Stmt(Stmt::stmt_stmt,  &$1); }
+         | stmt    { $$ = $1; }
 
 defun : "def" id "(" decl_list ")" block { $$ = Defun($2, $4, $6); }
 
-stmts : stmt       { $$ = std::vector<Stmt>(); $$.push_back($1); }
-      | stmts stmt { $1.push_back($2); $$ = $1; }
+stmts : stmt stmts { $2.push_back($1); $$ = $1; }
       | %empty     { $$ = std::vector<Stmt>(); }
 
 stmt : rawaexp { $$ = Stmt(Stmt::stmt_aexp,   &$1); }
@@ -124,8 +129,11 @@ stmt : rawaexp { $$ = Stmt(Stmt::stmt_aexp,   &$1); }
      | loop    { $$ = Stmt(Stmt::stmt_loop,   &$1); }
      | block   { $$ = Stmt(Stmt::stmt_block,  &$1); }
      | decl    { $$ = Stmt(Stmt::stmt_decl,   &$1); }
+     | return  { $$ = Stmt(Stmt::stmt_ret,    &$1); }
 
 block : "{" stmts "}" { $$ = Block($2); }
+
+return : "return" aexp { $$ = Return($2); }
 
 rawaexp : aexp { $$ = RawAExp($1); }
 
@@ -135,8 +143,8 @@ decl_list : decl               { $$ = std::vector<Decl>(); $$.push_back($1); }
 
 decl : type_spec id            { $$ = Decl($1, $2); }
 
-type_spec : "int"                     { $$ = Type(Type::type_int); }
-          | "double"                  { $$ = Type(Type::type_double); }  
+type_spec : "i64"                     { $$ = Type(Type::type_int); }
+          | "f64"                     { $$ = Type(Type::type_double); }  
           | "(" type_spec_list ")"    { $$ = Type($2); }
           | type_spec "[" "]"         { $$ = Type($1); }
           | type_spec "[" INTEGER "]" { $$ = Type($1); }
@@ -151,29 +159,27 @@ assign : id "=" aexp { $$ = Assign($1, $3); }
 
 loop : FOR id FROM aexp TO aexp STEP aexp stmt { $$ = Loop($2, $4, $6, $8, &$9); }
 
-%left "+" "-";
-%left "*" "/";
-
 atom : id            { $$ = AExp($1); }
      | "(" aexp ")"  { $$ = $2; }
      | INTEGER       { $$ = AExp($1); }
      | FLOAT         { $$ = AExp($1); }
      | call          { $$ = $1; }
-     | "-" atom      { $$ = AExp(AExp::aexp_negate, $2);  }
-     | "+" atom      { $$ = $2; }
 
-term : atom          { $$ = $1; }
-     | atom "+" atom { $$ = AExp(AExp::aexp_add, $1, $3); } 
-     | atom "-" atom { $$ = AExp(AExp::aexp_sub, $1, $3); } 
+factor : "-" factor      { $$ = AExp(AExp::aexp_negate, $2);  }
+       | "+" factor      { $$ = $2; }
+       | atom            { $$ = $1; }
+
+term : factor          { $$ = $1; }
+     | factor "+" term { $$ = AExp(AExp::aexp_add, $1, $3); } 
+     | factor "-" term { $$ = AExp(AExp::aexp_sub, $1, $3); } 
 
 aexp : term          { $$ = $1; }
-     | term "*" term { $$ = AExp(AExp::aexp_mul, $1, $3); }
-     | term "/" term { $$ = AExp(AExp::aexp_div, $1, $3); }
+     | term "*" aexp { $$ = AExp(AExp::aexp_mul, $1, $3); }
+     | term "/" aexp { $$ = AExp(AExp::aexp_div, $1, $3); }
 
 call : id "(" arg_list ")" { $$ = AExp($1, $3); }
 
-arg_list : aexp              { $$ = std::vector<AExp>(); $$.push_back($1); }
-         | arg_list "," aexp { $1.push_back($3); $$ = $1; }
+arg_list : aexp "," arg_list { $3.push_back($1); $$ = $3; }
          | %empty            { $$ = std::vector<AExp>(); }
 
 id : IDENTIFIER      { $$ = Identifier($1); }
