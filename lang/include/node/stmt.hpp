@@ -11,7 +11,8 @@ class Stmt: public Node {
  public:
   typedef enum {
     stmt_loop, stmt_aexp, stmt_assign, stmt_block, stmt_stmts,
-    stmt_undef, stmt_decl, stmt_defun, stmt_stmt
+    stmt_undef, stmt_decl, stmt_defun, stmt_stmt, stmt_import,
+    stmt_modef,
   } stmt_type_t;
   stmt_type_t stmt_type = stmt_undef;
 

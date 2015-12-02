@@ -4,8 +4,10 @@ namespace kaleido {
 
 Stmt::Stmt() : stmt(nullptr) { }
 
-Stmt::Stmt(stmt_type_t stmt_type, Stmt *stmt)
-    : stmt(stmt) { }
+Stmt::Stmt(stmt_type_t stmt_type, Stmt *stmt) {
+  this->stmt_type = stmt_type;
+  this->stmt = new Stmt(*stmt);
+}
 
 Block::Block() { }
 
@@ -27,7 +29,7 @@ Loop::Loop() { }
 
 Loop::Loop(Identifier &bind, AExp &begin, AExp &end, AExp &step, Stmt *stmt)
     : bind_name(bind.value), begin(begin), end(end), step(step) {
-  this->stmt = stmt;
+  this->stmt = new Stmt(*stmt);
   stmt_type = stmt_loop;
 }
 
@@ -49,27 +51,42 @@ Decl::Decl(Type &type, Identifier &id)
   stmt_type = stmt_decl;
 }
 
-Defun::Defun() { }
+Defun::Defun() {
+  stmt_type = stmt_defun;
+}
 
 Defun::Defun(Identifier &id, std::vector<Decl> &decls, Block &block)
-    : name(id.value), decls(decls), block(block) { }
+    : name(id.value), decls(decls), block(block) {
+  stmt_type = stmt_defun;
+}
 
 ModDecl::ModDecl() { }
 
 ModDecl::ModDecl(std::string &name)
     : name(name) { }
 
-Import::Import() { }
+Import::Import() {
+  stmt_type = stmt_import;
+}
 
 Import::Import(std::string &name)
-    : name(name) { }
+    : name(name) {
+  stmt_type = stmt_import;
+}
 
-ModDef::ModDef() { }
+ModDef::ModDef() {
+  stmt_type = stmt_modef;
+}
 
 ModDef::ModDef(std::vector<Stmt> &stmts)
-    : stmts(stmts) { }
+    : stmts(stmts) {
+  stmt_type = stmt_modef;
+}
 
 ModDef::ModDef(std::string &name, std::vector<Import> &imps, std::vector<Stmt> &stmts)
-    : name(name), stmts(stmts), imports(imps) { }
+    : name(name), stmts(stmts), imports(imps) {
+  stmt_type = stmt_modef;
+
+}
 
 }
