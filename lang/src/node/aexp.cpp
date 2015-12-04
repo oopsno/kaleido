@@ -16,6 +16,7 @@ AExp::AExp(Identifier &id) {
 AExp::AExp(int64_t ival) {
   node_type = aexp;
   aexp_type = aexp_imm;
+  using_int = true;
   this->ival = ival;
 }
 
@@ -45,6 +46,50 @@ AExp::AExp(Identifier &func, std::vector<AExp> &args) {
   aexp_type = aexp_call;
   function_name = func.value;
   args = args;
+}
+
+const char * dump_aexp_type(AExp::aexp_operator_t t) {
+  switch (t) {
+    case AExp::aexp_add:
+      return "+";
+    case AExp::aexp_sub:
+    case AExp::aexp_negate:
+      return "-";
+    case AExp::aexp_mul:
+      return "*";
+    case AExp::aexp_div:
+      return "/";
+  }
+  return "";
+}
+
+void AExp::dump(int indent) {
+  switch (aexp_type) {
+    case aexp_id:
+      println(indent, "<AExp ID \"" + identifier_name + "\">");
+      break;
+    case aexp_imm:
+      println(indent, "<Imm " + (using_int ? std::to_string(ival) : std::to_string(fval)) + ">");
+      break;
+    case aexp_unary:
+      println(indent, std::string("<AExp '") + dump_aexp_type(aexp_operator) + "'>");
+      left->dump(indent + 2);
+      break;
+    case aexp_binary:
+      println(indent, std::string("<AExp '") + dump_aexp_type(aexp_operator) + "'>");
+      left->dump(indent + 2);
+      right->dump(indent + 2);
+      break;
+    case aexp_call:
+      println(indent, "<AExp Call \"" + function_name + "\">");
+      for (AExp aexp : args) {
+        aexp.dump(indent + 2);
+      }
+      break;
+    default:
+      println(indent, "<Undefined AExp>");
+      break;
+  }
 }
 
 AExp::~AExp() {

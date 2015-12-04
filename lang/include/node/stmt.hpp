@@ -12,13 +12,15 @@ class Stmt: public Node {
   typedef enum {
     stmt_loop, stmt_aexp, stmt_assign, stmt_block, stmt_stmts,
     stmt_undef, stmt_decl, stmt_defun, stmt_stmt, stmt_import,
-    stmt_modef,
+    stmt_moddef, stmt_moddecl, stmt_ret,
   } stmt_type_t;
   stmt_type_t stmt_type = stmt_undef;
 
   Stmt();
   Stmt(stmt_type_t stmt_type, Stmt *stmt);
   Stmt *stmt = nullptr;
+  bool wrapped = false;
+  void dump(int indent = 0);
 };
 
 class Block: public Stmt {
@@ -26,6 +28,7 @@ class Block: public Stmt {
   Block();
   Block(std::vector<Stmt> &stmts);
   std::vector<Stmt> stmts;
+  void dump(int indent = 0);
 };
 
 class Loop: public Stmt {
@@ -36,6 +39,7 @@ class Loop: public Stmt {
   AExp begin;
   AExp end;
   AExp step;
+  void dump(int indent = 0);
 };
 
 class RawAExp: public Stmt {
@@ -43,6 +47,7 @@ class RawAExp: public Stmt {
   RawAExp();
   RawAExp(AExp &exp);
   AExp exp;
+  void dump(int indent = 0);
 };
 
 class Assign: public Stmt {
@@ -51,6 +56,7 @@ class Assign: public Stmt {
   Assign(Identifier &slot, AExp &value);
   std::string slot;
   AExp value;
+  void dump(int indent = 0);
 };
 
 class Decl: public Stmt {
@@ -59,6 +65,15 @@ class Decl: public Stmt {
   Decl(Type &type, Identifier &id);
   Type type;
   std::string id;
+  void dump(int indent = 0);
+};
+
+class Return: public Stmt {
+ public:
+  Return();
+  Return(AExp &);
+  void dump(int indent);
+  AExp exp;
 };
 
 class Defun: public Stmt {
@@ -68,6 +83,7 @@ class Defun: public Stmt {
   std::string name;
   std::vector<Decl> decls;
   Block block;
+  void dump(int indent = 0);
 };
 
 class ModDecl: public Stmt {
@@ -75,6 +91,7 @@ class ModDecl: public Stmt {
   ModDecl();
   ModDecl(std::string &name);
   std::string name;
+  void dump(int indent = 0);
 };
 
 class Import: public Stmt {
@@ -82,16 +99,18 @@ class Import: public Stmt {
   Import();
   Import(std::string &name);
   std::string name;
+  void dump(int indent = 0);
 };
 
 class ModDef: public Stmt {
  public:
   ModDef();
-  ModDef(std::vector<Stmt>&);
-  ModDef(std::string&, std::vector<Import>&, std::vector<Stmt>&);
+  ModDef(std::vector<Stmt> &);
+  ModDef(std::string &, std::vector<Import> &, std::vector<Stmt> &);
   std::vector<Stmt> stmts;
   std::vector<Import> imports;
   std::string name;
+  void dump(int indent = 0);
 };
 
 }

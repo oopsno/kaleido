@@ -16,6 +16,8 @@ class Node {
   node_type_t node_type;
   Node();
   Node(const node_type_t type);
+  virtual void dump(int indent = 0);
+  void println(int indent, std::string line);
 };
 
 }

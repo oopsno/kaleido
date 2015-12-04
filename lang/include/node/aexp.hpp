@@ -25,7 +25,8 @@ class AExp: public Node {
   AExp(aexp_operator_t op, AExp &left, AExp &right);
   AExp(Identifier &func, std::vector<AExp> &args);
   ~AExp();
- private:
+  void dump(int indent);
+
   aexp_type_t aexp_type;
   aexp_operator_t aexp_operator;
   AExp *left = nullptr;
@@ -33,6 +34,7 @@ class AExp: public Node {
   std::string identifier_name;
   std::string function_name;
   std::vector<AExp> args;
+  bool using_int = false;
   int64_t ival;
   double fval;
 };

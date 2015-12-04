@@ -10,4 +10,8 @@ Identifier::Identifier() {
 Identifier::Identifier(std::string &id)
     : value(id) { node_type = identifier; }
 
+void Identifier::dump(int indent) {
+  println(indent, std::string("<ID ") + value + ">");
+}
+
 }

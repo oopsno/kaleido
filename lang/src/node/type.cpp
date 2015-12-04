@@ -13,16 +13,14 @@ Type::Type(const type_type_t tp) {
   is_basic = true;
 }
 
-Type::Type(const Type &elem_type) {
-  node_type = type;
-  type_type = type_array;
-  element_type = new Type(elem_type);
-}
-
 Type::Type(const std::vector<Type> &types) {
   node_type = type;
   type_type = type_tuple;
   tuple_types = new std::vector<Type>(types);
+}
+
+void Type::dump(int indent) {
+  println(indent, "<Type>");
 }
 
 }

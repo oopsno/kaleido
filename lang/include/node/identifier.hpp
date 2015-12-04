@@ -10,6 +10,8 @@ class Identifier: public Node {
   Identifier();
   Identifier(std::string &id);
   std::string value;
+
+  void dump(int indent);
 };
 
 }

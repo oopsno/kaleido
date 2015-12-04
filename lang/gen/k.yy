@@ -110,7 +110,7 @@ import : "import" module_name { $$ = Import($2); }
 
 module_decl : "module" module_name { $$ = ModDecl($2); }
 
-module_name : module_name "." id { $$ = $3 + $1.value; }
+module_name : module_name "." id { $$ = $1 + $3.value; }
             | id                 { $$ = $1; }
 
 top_stmts : top_stmt top_stmts { $2.push_back($1); $$ = $2; }
