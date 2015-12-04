@@ -38,28 +38,36 @@ semi  ;
 
 [\n]+    { loc.lines (yyleng); loc.step(); }
 
-"-"      { return kaleido::parser::KaleidoParser::make_MINUS(loc);  }
-"+"      { return kaleido::parser::KaleidoParser::make_PLUS(loc);   }
-"*"      { return kaleido::parser::KaleidoParser::make_STAR(loc);   }
-"/"      { return kaleido::parser::KaleidoParser::make_SLASH(loc);  }
-"="      { return kaleido::parser::KaleidoParser::make_ASSIGN(loc); }
-"("      { return kaleido::parser::KaleidoParser::make_LPAREN(loc); }
-")"      { return kaleido::parser::KaleidoParser::make_RPAREN(loc); }
-"{"      { return kaleido::parser::KaleidoParser::make_LBRACE(loc); }
-"}"      { return kaleido::parser::KaleidoParser::make_RBRACE(loc); }
-","      { return kaleido::parser::KaleidoParser::make_COMMA(loc);  }
-"for"    { return kaleido::parser::KaleidoParser::make_FOR(loc);    }
-"from"   { return kaleido::parser::KaleidoParser::make_FROM(loc);   }
-"to"     { return kaleido::parser::KaleidoParser::make_TO(loc);     }
-"step"   { return kaleido::parser::KaleidoParser::make_STEP(loc);   }
-"set"    { return kaleido::parser::KaleidoParser::make_SET(loc);    }
-"import" { return kaleido::parser::KaleidoParser::make_IMPORT(loc); }
-"module" { return kaleido::parser::KaleidoParser::make_MODULE(loc); }
-"def"    { return kaleido::parser::KaleidoParser::make_DEF(loc);    }
-"i64"    { return kaleido::parser::KaleidoParser::make_I64(loc);    }
-"f64"    { return kaleido::parser::KaleidoParser::make_F64(loc);    }
-"return" { return kaleido::parser::KaleidoParser::make_RET(loc);    }
+%{
+#define RET_TK(type) return kaleido::parser::KaleidoParser::type (loc)
+%}
 
+"-"      { RET_TK(make_MINUS);  }
+"+"      { RET_TK(make_PLUS);   }
+"*"      { RET_TK(make_STAR);   }
+"/"      { RET_TK(make_SLASH);  }
+"**"     { RET_TK(make_POW);  }
+"="      { RET_TK(make_ASSIGN); }
+"("      { RET_TK(make_LPAREN); }
+")"      { RET_TK(make_RPAREN); }
+"{"      { RET_TK(make_LBRACE); }
+"}"      { RET_TK(make_RBRACE); }
+","      { RET_TK(make_COMMA);  }
+"for"    { RET_TK(make_FOR);    }
+"from"   { RET_TK(make_FROM);   }
+"to"     { RET_TK(make_TO);     }
+"step"   { RET_TK(make_STEP);   }
+"set"    { RET_TK(make_SET);    }
+"import" { RET_TK(make_IMPORT); }
+"module" { RET_TK(make_MODULE); }
+"def"    { RET_TK(make_DEF);    }
+"i64"    { RET_TK(make_I64);    }
+"f64"    { RET_TK(make_F64);    }
+"return" { RET_TK(make_RET);    }
+
+%{
+#undef RET_TK
+%}
 
 {int}    { errno = 0;
            int64_t n = strtol (yytext, NULL, 10);
@@ -99,4 +107,3 @@ void kaleido::parser::KaleidoDriver::scan_begin() {
 void kaleido::parser::KaleidoDriver::scan_end() {
     fclose(yyin);
 }
-

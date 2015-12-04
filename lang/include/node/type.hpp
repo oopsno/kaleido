@@ -6,6 +6,11 @@
 
 namespace kaleido {
 
+class Type;
+
+typedef NodeList <Type> TypeList;
+
+
 class Type: public Node {
  public:
   typedef enum {
@@ -16,12 +21,12 @@ class Type: public Node {
 
   Type();
   Type(type_type_t type);
-  Type(const std::vector<Type> &types);
+  Type(const TypeList &types);
 
   type_type_t type_type = type_undef;
   bool is_basic = false;
-  Type * element_type = nullptr;
-  std::vector<Type> * tuple_types = nullptr;
+  Type *element_type = nullptr;
+  TypeList *tuple_types = nullptr;
   void dump(int indent);
 };
 

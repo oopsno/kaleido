@@ -17,7 +17,6 @@ Stmt::Stmt(stmt_type_t stmt_type, Stmt *stmt) {
     DOWNCAST(stmt_loop, Loop);
     DOWNCAST(stmt_defun, Defun);
     DOWNCAST(stmt_import, Import);
-    DOWNCAST(stmt_block, Block);
     DOWNCAST(stmt_decl, Decl);
     DOWNCAST(stmt_assign, Assign);
     DOWNCAST(stmt_aexp, RawAExp);
@@ -37,7 +36,6 @@ void Stmt::dump(int indent) {
     DOWNCAST(stmt_loop, Loop);
     DOWNCAST(stmt_defun, Defun);
     DOWNCAST(stmt_import, Import);
-    DOWNCAST(stmt_block, Block);
     DOWNCAST(stmt_decl, Decl);
     DOWNCAST(stmt_assign, Assign);
     DOWNCAST(stmt_aexp, RawAExp);
@@ -45,20 +43,6 @@ void Stmt::dump(int indent) {
     default:
       println(indent, "<Undef Stmt>");
 #undef DOWNCAST
-  }
-}
-
-Block::Block() { }
-
-Block::Block(std::vector<Stmt> &stmts)
-    : stmts(stmts) {
-  stmt_type = stmt_block;
-}
-
-void Block::dump(int indent) {
-  println(indent, "<Block>");
-  for (Stmt stmt : stmts) {
-    stmt.dump(indent + 2);
   }
 }
 
@@ -81,9 +65,8 @@ Loop::Loop() {
   stmt_type = stmt_loop;
 }
 
-Loop::Loop(Identifier &bind, AExp &begin, AExp &end, AExp &step, Stmt *stmt)
-    : bind_name(bind.value), begin(begin), end(end), step(step) {
-  this->stmt = new Stmt(*stmt);
+Loop::Loop(Identifier &bind, AExp &begin, AExp &end, AExp &step, StmtList &stmts)
+    : bind_name(bind.value), begin(begin), end(end), step(step), stmts(stmts) {
   stmt_type = stmt_loop;
 }
 
@@ -95,6 +78,8 @@ void Loop::dump(int indent) {
   step.dump(indent + 4);
   println(indent + 2, "<Loop - End>");
   end.dump(indent + 4);
+  println(indent + 2, "<Loop - Block>");
+  stmts.dump(indent + 4);
 }
 
 Assign::Assign() { }
@@ -145,9 +130,8 @@ Defun::Defun() {
   stmt_type = stmt_defun;
 }
 
-Defun::Defun(Identifier &id, std::vector<Decl> &decls, Block &block)
-    : name(id.value), decls(decls), block(block) {
-  stmt_type = stmt_defun;
+Defun::Defun(Identifier &id, DeclList &decls, StmtList &stmts)
+    : name(id.value), decls(decls), stmts(stmts) {
 }
 
 void Defun::dump(int indent) {
@@ -156,7 +140,7 @@ void Defun::dump(int indent) {
   for (Decl decl : decls) {
     decl.dump(indent + 4);
   }
-  block.dump(indent + 4);
+  stmts.dump(indent + 4);
 }
 
 ModDecl::ModDecl() { }
@@ -182,31 +166,24 @@ void Import::dump(int indent) {
 }
 
 ModDef::ModDef() {
-  stmt_type = stmt_moddef;
+  node_type = mod_def;
 }
 
-
-ModDef::ModDef(std::vector<Stmt> &stmts)
-    : stmts(stmts) {
-  stmt_type = stmt_moddef;
+ModDef::ModDef(StmtList &stmts) : stmts(stmts) {
+  node_type = mod_def;
 }
 
-ModDef::ModDef(std::string &name, std::vector<Import> &imps, std::vector<Stmt> &stmts)
-    : name(name), stmts(stmts), imports(imps) {
-  stmt_type = stmt_moddef;
-
+ModDef::ModDef(std::string &name, ImportList &imports, StmtList &stmts)
+    : imports(imports), stmts(stmts) {
+  node_type = mod_def;
 }
 
 void ModDef::dump(int indent) {
   println(indent, "<ModDef \"" + name + "\">");
   println(indent + 2, "<Import List>");
-  for (Import imp : imports) {
-    imp.dump(indent + 4);
-  }
+  imports.dump(indent + 4);
   println(indent + 2, "<Stmt List>");
-  for (Stmt stmt : stmts) {
-    stmt.dump(indent + 4);
-  }
+  stmts.dump(indent + 4);
 }
 
 }

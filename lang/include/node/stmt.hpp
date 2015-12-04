@@ -2,6 +2,7 @@
 #define KALEIDO_STMT_HPP
 
 #include "node/basic.hpp"
+#include "node/type.hpp"
 #include <vector>
 #include <string>
 
@@ -23,22 +24,17 @@ class Stmt: public Node {
   void dump(int indent = 0);
 };
 
-class Block: public Stmt {
- public:
-  Block();
-  Block(std::vector<Stmt> &stmts);
-  std::vector<Stmt> stmts;
-  void dump(int indent = 0);
-};
+typedef NodeList<Stmt> StmtList;
 
 class Loop: public Stmt {
  public:
   Loop();
-  Loop(Identifier &bind, AExp &begin, AExp &end, AExp &step, Stmt *stmt);
+  Loop(Identifier &bind, AExp &begin, AExp &end, AExp &step, StmtList & stmts);
   std::string bind_name;
   AExp begin;
   AExp end;
   AExp step;
+  StmtList stmts;
   void dump(int indent = 0);
 };
 
@@ -76,13 +72,15 @@ class Return: public Stmt {
   AExp exp;
 };
 
+typedef NodeList<Decl> DeclList;
+
 class Defun: public Stmt {
  public:
   Defun();
-  Defun(Identifier &id, std::vector<Decl> &decls, Block &block);
+  Defun(Identifier &id, DeclList &decls, StmtList &stmts);
   std::string name;
-  std::vector<Decl> decls;
-  Block block;
+  DeclList decls;
+  StmtList stmts;
   void dump(int indent = 0);
 };
 
@@ -102,13 +100,15 @@ class Import: public Stmt {
   void dump(int indent = 0);
 };
 
+typedef NodeList<Import> ImportList;
+
 class ModDef: public Stmt {
  public:
   ModDef();
-  ModDef(std::vector<Stmt> &);
-  ModDef(std::string &, std::vector<Import> &, std::vector<Stmt> &);
-  std::vector<Stmt> stmts;
-  std::vector<Import> imports;
+  ModDef(StmtList &);
+  ModDef(std::string &, ImportList &, StmtList &);
+  ImportList imports;
+  StmtList stmts;
   std::string name;
   void dump(int indent = 0);
 };

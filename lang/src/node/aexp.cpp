@@ -41,14 +41,19 @@ AExp::AExp(aexp_operator_t op, AExp &left, AExp &right) {
   this->right = new AExp(right);
 }
 
-AExp::AExp(Identifier &func, std::vector<AExp> &args) {
-  node_type = aexp;
-  aexp_type = aexp_call;
-  function_name = func.value;
-  args = args;
+AExp::AExp(aexp_type_t type, AExp &callee, AExpList &argument)
+    : Node(aexp), aexp_type(type) {
+  this->left = new AExp(callee);
+  this->args = new AExpList(argument);
 }
 
-const char * dump_aexp_type(AExp::aexp_operator_t t) {
+AExp::AExp(aexp_type_t type, AExp &object, std::string &attr)
+    : Node(aexp), aexp_type(type) {
+  this->left = new AExp(object);
+  this->attr_name = attr;
+}
+
+const char *dump_aexp_type(AExp::aexp_operator_t t) {
   switch (t) {
     case AExp::aexp_add:
       return "+";
@@ -59,6 +64,8 @@ const char * dump_aexp_type(AExp::aexp_operator_t t) {
       return "*";
     case AExp::aexp_div:
       return "/";
+    case AExp::aexp_pow:
+      return "**";
   }
   return "";
 }
@@ -81,10 +88,9 @@ void AExp::dump(int indent) {
       right->dump(indent + 2);
       break;
     case aexp_call:
-      println(indent, "<AExp Call \"" + function_name + "\">");
-      for (AExp aexp : args) {
-        aexp.dump(indent + 2);
-      }
+      println(indent, "<AExp Call>");
+      left->dump(indent + 2);
+      args->dump(indent + 2);
       break;
     default:
       println(indent, "<Undefined AExp>");

@@ -13,10 +13,10 @@ Type::Type(const type_type_t tp) {
   is_basic = true;
 }
 
-Type::Type(const std::vector<Type> &types) {
+Type::Type(const TypeList &types) {
   node_type = type;
   type_type = type_tuple;
-  tuple_types = new std::vector<Type>(types);
+  tuple_types = new TypeList(types);
 }
 
 void Type::dump(int indent) {
