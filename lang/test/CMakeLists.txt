@@ -7,4 +7,7 @@ target_link_libraries(test-node lib-node)
 add_executable(test-parser parser.cpp)
 target_link_libraries(test-parser lib-node lib-parser lib-scope lib-err)
 
+add_executable(test-dump-common dump_common.cpp)
+target_link_libraries(test-dump-common lib-dump-common)
+
 
