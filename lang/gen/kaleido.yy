@@ -44,11 +44,22 @@ class KaleidoDriver;
     ASSIGN  "="
     LPAREN  "("
     RPAREN  ")"
+    NOT     "not"
+    AND     "and"
+    OR      "or"
+    XOR     "xor"
+    LANGLE  "<"
+    RANGLE  ">"
+    EQ      "=="
+    LE      "<=" 
+    GE      ">="
+    NE      "!="
     MINUS   "-"
     PLUS    "+"
     STAR    "*"
-    SLASH   "/"
-    POW     "**"
+    DIV     "/"
+    IDIV    "//"
+    EXP     "^"
     COMMA   ","
     LBRACE  "{"
     RBRACE  "}"
@@ -60,7 +71,8 @@ class KaleidoDriver;
     IMPORT  "import"
     MODULE  "module"
     RET     "return"
-    DATA    "data"
+    IF      "if"
+    ELSE    "else"
 ;
 
 %token <std::string> NAME
@@ -77,7 +89,7 @@ class KaleidoDriver;
 %right "not";
 %left  ">" "<" "==" ">=" "<=";
 %left  "+" "-";
-%left  "*" "/";
+%left  "*" "/" "//";
 %precedence UNARY;
 %right "^";
 
@@ -165,6 +177,7 @@ ar : FLOAT
    | ar "-" ar
    | ar "*" ar
    | ar "/" ar
+   | ar "//" ar
    | "+" ar %prec UNARY
    | "-" ar %prec UNARY
    | ar "^" ar
