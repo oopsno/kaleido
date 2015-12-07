@@ -32,11 +32,9 @@ file(GLOB AST_SRC "src/ast/*.cpp")
 file(GLOB DUMP_SRC "src/dump/*.cpp")
 
 add_library(lib-err src/error.cpp)
-add_library(lib-node ${NODE_SRC})
 add_library(lib-ast ${AST_SRC})
 add_library(lib-parser src/driver.cpp ${BISON_gen_OUTPUT_SOURCE} ${FLEX_gen_OUTPUTS})
 add_library(lib-codegen ${CODEGEN_SRC})
-add_library(lib-scope src/scope.cpp)
 add_library(lib-context src/context.cpp)
 add_library(lib-dump ${DUMP_SRC})
 set_target_properties(lib-ast lib-parser lib-context lib-dump lib-codegen
