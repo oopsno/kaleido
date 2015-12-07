@@ -2,6 +2,7 @@
 #define KALEIDO_AST_ARITHMETIC_HPP
 
 #include "ast/ast.hpp"
+#include "ast/operators.hpp"
 #include "dump/common.hpp"
 #include "codegen/type_assist.hpp"
 #include <stdexcept>
@@ -17,8 +18,9 @@ using namespace kaleido::dump;
 using namespace kaleido;
 
 class Arithmetic: public AST {
+ public:
   virtual void dump(size_t indent = 0);
-  virtual llvm::Value *codegen(llvm::LLVMContext &);
+  virtual llvm::Value *codegen(codegen::Context &) = 0;
 };
 
 template<typename _Tp>
@@ -35,7 +37,7 @@ class Immediate: public Arithmetic {
     print_line("value: " + std::to_string(value), indent);
   }
 
-  virtual llvm::Value *codegen(llvm::LLVMContext &ctx) {
+  virtual llvm::Value *codegen(codegen::Context &ctx) {
     llvm::Type *type = codegen::ir_type_from<element_t>(ctx);
     if (std::is_integral<element_t>::value) {
       return llvm::ConstantInt::get(type, value, true);
@@ -46,6 +48,33 @@ class Immediate: public Arithmetic {
     }
   };
 };
+
+class BAO: public Arithmetic {
+ public:
+  BAO();
+  BAO(op::BinaryOperator, Arithmetic *, Arithmetic *);
+  ~BAO();
+  virtual void dump(size_t indent = 0);
+  virtual llvm::Value *codegen(codegen::Context &);
+ private:
+  op::BinaryOperator bop = op::UNDEFINED_BINARY_OPERATOR;
+  Arithmetic *lhs;
+  Arithmetic *rhs;
+};
+typedef BAO BinaryArithmeticOperate;
+
+class UAO: public Arithmetic {
+ public:
+  UAO();
+  UAO(op::UnaryOperator, Arithmetic *);
+  ~UAO();
+  virtual void dump(size_t indent = 0);
+  virtual llvm::Value *codegen(codegen::Context &);
+ private:
+  op::UnaryOperator uop = op::UNDEFINED_UNARY_OPERATOR;
+  Arithmetic *arithmetic;
+};
+typedef UAO UnaryArithmeticOperate;
 
 }
 }

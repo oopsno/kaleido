@@ -12,7 +12,7 @@ void AST::dump(size_t indent) {
 
 AST::~AST() { }
 
-llvm::Value *AST::codegen(llvm::LLVMContext &) {
+llvm::Value *AST::codegen(codegen::Context &) {
   return nullptr;
 }
 

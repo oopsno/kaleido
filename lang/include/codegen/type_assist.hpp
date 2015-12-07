@@ -8,15 +8,15 @@ namespace kaleido {
 namespace codegen {
 
 template<typename _Tp>
-llvm::Type *ir_type_from(llvm::LLVMContext &ctx) {
+llvm::Type *ir_type_from(codegen::Context &ctx) {
   throw std::invalid_argument(std::string("Unsupport Type: ") + typeid(_Tp).name());
 }
 
 template<>
-llvm::Type *ir_type_from<double>(llvm::LLVMContext &ctx);
+llvm::Type *ir_type_from<double>(codegen::Context &ctx);
 
 template<>
-llvm::Type *ir_type_from<int64_t>(llvm::LLVMContext &ctx);
+llvm::Type *ir_type_from<int64_t>(codegen::Context &ctx);
 
 }
 }
