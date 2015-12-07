@@ -6,21 +6,22 @@
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/LLVMContext.h"
 #include "llvm/IR/Module.h"
-//#include "location.hh"
+#include "location.hh"
 
 namespace kaleido {
 namespace ast {
 
-//using kaleido::parser::location;
+using kaleido::parser::location;
 
 class AST {
  public:
   virtual void dump(size_t indent = 0);
   virtual llvm::Value *codegen(llvm::LLVMContext &) = 0;
-//  const location &get_reduce_location() const;
-//  void set_reduce_location(const location &);
-// private:
-//  location loc;
+  virtual ~AST();
+  const location &get_reduce_location() const;
+  void set_reduce_location(const location &);
+ private:
+  location loc;
 };
 
 }

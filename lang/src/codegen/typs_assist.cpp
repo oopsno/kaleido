@@ -3,14 +3,14 @@
 namespace kaleido {
 namespace codegen {
 
-template <>
+template<>
 llvm::Type *ir_type_from<double>(llvm::LLVMContext &ctx) {
   return llvm::Type::getDoubleTy(ctx);
 }
 
-template <>
+template<>
 llvm::Type *ir_type_from<int64_t>(llvm::LLVMContext &ctx) {
-  return llvm::Type::getDoubleTy(ctx);
+  return (llvm::Type *) llvm::Type::getInt64Ty(ctx);
 }
 
 }

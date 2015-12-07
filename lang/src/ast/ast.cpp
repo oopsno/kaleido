@@ -10,17 +10,20 @@ void AST::dump(size_t indent) {
   print_line("node: AST", indent, color::LIGHT_GRAY);
 }
 
-llvm::Value* AST::codegen(llvm::LLVMContext &) {
+AST::~AST() { }
+
+llvm::Value *AST::codegen(llvm::LLVMContext &) {
   return nullptr;
 }
 
-//const location &get_reduce_location() const {
-//  return location;
-//}
-//
-//void set_reduce_location(const location & loc) {
-//  location = loc;
-//}
+
+const location &AST::get_reduce_location() const {
+  return loc;
+}
+
+void AST::set_reduce_location(const location &loc) {
+  this->loc = loc;
+}
 
 }
 }
