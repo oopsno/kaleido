@@ -3,6 +3,15 @@
 namespace kaleido {
 namespace ast {
 
+VariableRef::VariableRef() { }
+
+VariableRef::VariableRef(std::string &name) : name(name) { }
+
+void VariableRef::dump(size_t indent) {
+  print_line("node: VariableRef", indent);
+  print_line("value: " + name, indent);
+}
+
 BAO::BAO() { }
 
 BAO::BAO(op::BinaryOperator bop, Arithmetic *lhs, Arithmetic *rhs)

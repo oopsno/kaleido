@@ -3,6 +3,10 @@
 namespace kaleido {
 namespace ast {
 
+llvm::Value* VariableRef::codegen(codegen::Context &ctx) {
+  return nullptr;
+}
+
 llvm::Value *BAO::codegen(codegen::Context &ctx) {
   llvm::Value *lhs_value = lhs->codegen(ctx);
   llvm::Value *rhs_value = rhs->codegen(ctx);

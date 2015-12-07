@@ -82,6 +82,8 @@ class KaleidoDriver;
 %token <bool>        TRUE
 %token <bool>        FALSE
 
+%type <Arithmetic*> ar;
+
 %%
 
 %left  "or" "xor";
@@ -170,18 +172,18 @@ bool : TRUE
      | "(" bool ")"
 
 /* ar[ithmetic] */
-ar : FLOAT
-   | INTEGER
-   | NAME 
-   | ar "+" ar
-   | ar "-" ar
-   | ar "*" ar
-   | ar "/" ar
-   | ar "//" ar
-   | "+" ar %prec UNARY
-   | "-" ar %prec UNARY
-   | ar "^" ar
-   | "(" ar ")" 
+ar : FLOAT   { $$ = new Immediate<double>($1);  }
+   | INTEGER { $$ = new Immediate<int64_t>($1); }
+   | NAME    { $$ = new VariableRef($1); }
+   | ar "+" ar  { $$ = new BinaryArithmeticOperate(op::ADD, $1, $3); }
+   | ar "-" ar  { $$ = new BinaryArithmeticOperate(op::SUB, $1, $3); }
+   | ar "*" ar  { $$ = new BinaryArithmeticOperate(op::MUL, $1, $3); }
+   | ar "/" ar  { $$ = new BinaryArithmeticOperate(op::DIV, $1, $3); }
+   | ar "//" ar { $$ = new BinaryArithmeticOperate(op::IDIV, $1, $3); }
+   | "+" ar %prec UNARY { $$ = $2; }
+   | "-" ar %prec UNARY { $$ = new UnaryArithmeticOperate(op::NEGATE, $2); }
+   | ar "^" ar  { $$ = new BinaryArithmeticOperate(op::EXP, $1, $3); }
+   | "(" ar ")"  { $$ = $2; }
 
 name : NAME
 

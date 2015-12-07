@@ -49,6 +49,15 @@ class Immediate: public Arithmetic {
   };
 };
 
+class VariableRef: public Arithmetic {
+ public:
+  VariableRef();
+  VariableRef(std::string &);
+  std::string name;
+  virtual void dump(size_t indent = 0);
+  virtual llvm::Value *codegen(codegen::Context &);
+};
+
 class BAO: public Arithmetic {
  public:
   BAO();
