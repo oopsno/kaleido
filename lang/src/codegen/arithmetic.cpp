@@ -4,6 +4,7 @@ namespace kaleido {
 namespace ast {
 
 llvm::Value* VariableRef::codegen(codegen::Context &ctx) {
+  // TODO deal with symbol table
   return nullptr;
 }
 
