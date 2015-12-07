@@ -2,9 +2,9 @@
 #define KALEIDO_DRIVER_HPP
 
 #include "location.hh"
-#include "scope.hpp"
-#include "node.hpp"
 #include "parser.hpp"
+#include "context.hpp"
+#include "ast.hpp"
 
 // ... and declare it for the parser's sake.
 
@@ -16,8 +16,7 @@ class KaleidoDriver {
  public:
   KaleidoDriver();
   virtual ~KaleidoDriver();
-  Scope global;
-  ModDef result;
+  ast::AST *result;
   void scan_begin();
   void scan_end();
   bool trace_scanning;
