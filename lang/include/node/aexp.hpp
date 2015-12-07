@@ -45,6 +45,11 @@ class AExp: public Node {
   double fval;
 };
 
-}
+template<typename _Tp>
+class Imm: public {
+
+    };
+
+    }
 
 #endif //KALEIDO_AEXP_HPP

@@ -11,3 +11,5 @@ add_executable(test-dump-common dump_common.cpp)
 target_link_libraries(test-dump-common lib-dump-common)
 
 
+add_executable(test-ast ast.cpp)
+target_link_libraries(test-ast lib-dump-common lib-ast)
