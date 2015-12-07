@@ -63,8 +63,8 @@ class KaleidoDriver;
     DATA    "data"
 ;
 
-%token <std::string> NAME    "name"
-%token <std::string> TYPE    "type"
+%token <std::string> NAME
+%token <std::string> CAPNAME 
 %token <int64_t>     INTEGER
 %token <double>      FLOAT
 %token <bool>        TRUE
@@ -95,8 +95,8 @@ modef : "module" module_name
 /* import */
 imp : "import" module_name
 
-module_name : TYPE
-            | module_name "." TYPE
+module_name : CAPNAME
+            | module_name "." CAPNAME
 
 /* function */
 defun : type name "(" var_decl_list ")" func_body
@@ -172,7 +172,7 @@ ar : FLOAT
 
 name : NAME
 
-type : TYPE
+type : CAPNAME
 
 %%
 
