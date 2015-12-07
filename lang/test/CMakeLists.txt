@@ -12,4 +12,7 @@ target_link_libraries(test-dump-common lib-dump-common)
 
 
 add_executable(test-ast ast.cpp)
-target_link_libraries(test-ast lib-dump lib-ast lib-context lib-codegen)
+target_link_libraries(test-ast lib-dump lib-ast lib-context lib-codegen )
+set_target_properties(test-ast
+        PROPERTIES COMPILE_FLAGS ${CXX_FLAGS_WITH_LLVM}
+                   LINK_FLAGS    ${LLVM_LINK_FLAGS})

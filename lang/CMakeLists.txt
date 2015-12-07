@@ -1,34 +1,30 @@
 cmake_minimum_required(VERSION 3.3)
 project(kaleido-lang)
 
-set(LLVM_HOME "/usr/local/opt/llvm")
-set(LLVM_BIN "${LLVM_HOME}/bin")
-set(LLVM_LIB "${LLVM_HOME}/lib")
-set(LLVM_INCLUDE "${LLVM_HOME}/include")
-find_library(LLVM
-        NAMES LLVMCore LLVMSupport LLVM
-        PATHS ${LLVM_LIB} NO_DEFAULT_PATH)
-
-
 set(CMAKE_CXX_STANDARD 11)
 
+# Configuartion made by `llvm-config` using
 execute_process(
-        COMMAND llvm-config --cxxflags --ldflags --system-libs --libs core
-        OUTPUT_VARIABLE LLVM_CONFIG_MULINE)
+        COMMAND llvm-config --includedir
+        OUTPUT_VARIABLE LLVM_INCLUDE_DIR)
+execute_process(
+        COMMAND llvm-config --cxxflags
+        OUTPUT_VARIABLE LLVM_CXX_FLAGS)
+execute_process(
+        COMMAND llvm-config --ldflags --system-libs --libs core
+        OUTPUT_VARIABLE LLVM_LINK_FLAGS_MULINE)
 
-string(REGEX REPLACE "\n" " " LLVM_CONFIG ${LLVM_CONFIG_MULINE})
+string(REGEX REPLACE "\n" " " LLVM_LINK_FLAGS ${LLVM_LINK_FLAGS_MULINE})
 
-message(STATUS "[llvm-config]" ${LLVM_CONFIG})
-
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${LLVM_CONFIG} -Wno-unused-parameter")
+set(CXX_FLAGS_WITH_LLVM "${CMAKE_CXX_FLAGS} ${LLVM_CXX_FLAGS}")
 
 find_package(flex)
 find_package(bison)
 
-include_directories(include gen ${LLVM_INCLUDE})
+include_directories(include gen ${LLVM_INCLUDE_DIR})
 
-bison_target(gen "gen/k.yy" ${CMAKE_CURRENT_SOURCE_DIR}/gen/parser.cpp)
-flex_target(gen "gen/k.ll" ${CMAKE_CURRENT_SOURCE_DIR}/gen/lexer.cpp)
+bison_target(gen "gen/kaleido.yy" ${CMAKE_CURRENT_SOURCE_DIR}/gen/parser.cpp)
+flex_target(gen "gen/kaleido.ll" ${CMAKE_CURRENT_SOURCE_DIR}/gen/lexer.cpp)
 
 file(GLOB NODE_SRC "src/node/*.cpp")
 file(GLOB CODEGEN_SRC "src/codegen/*.cpp")
@@ -43,6 +39,9 @@ add_library(lib-codegen ${CODEGEN_SRC})
 add_library(lib-scope src/scope.cpp)
 add_library(lib-context src/context.cpp)
 add_library(lib-dump ${DUMP_SRC})
+set_target_properties(lib-ast lib-parser lib-context lib-dump lib-codegen
+        PROPERTIES COMPILE_FLAGS ${CXX_FLAGS_WITH_LLVM})
+
 
 add_subdirectory(test)
 
