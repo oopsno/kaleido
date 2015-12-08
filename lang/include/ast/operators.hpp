@@ -10,7 +10,10 @@ namespace op {
 // Binary
 
 enum BinaryOperator {
-  ADD, SUB, MUL, DIV, IDIV, MOD, EXP, AND, OR, XOR, UNDEFINED_BINARY_OPERATOR
+  ADD = 0, SUB, MUL, DIV, IDIV, MOD, EXP,
+  AND, OR, XOR,
+  GT, GE, EQ, LE, LT, NE,
+  UNDEFINED_BINARY_OPERATOR
 };
 
 const std::string &name_of(BinaryOperator);
@@ -18,7 +21,9 @@ const std::string &name_of(BinaryOperator);
 // Unary
 
 enum UnaryOperator {
-  NOT, NEGATE, UNDEFINED_UNARY_OPERATOR
+  NEGATE = 0,
+  NOT, NONZERO,
+  UNDEFINED_UNARY_OPERATOR
 };
 
 const std::string &name_of(UnaryOperator);
