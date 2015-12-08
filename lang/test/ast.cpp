@@ -9,7 +9,7 @@ int main() {
   Immediate<double> *imm_f = new Immediate<double>(42.0);
   imm_f->codegen(ctx)->dump();
   imm_i->codegen(ctx)->dump();
-  BAO *addfi = new BAO(op::ADD, imm_f, imm_f);
+  BAO *addfi = new BAO(op::ADD, imm_f, imm_i);
   addfi->codegen(ctx)->dump();
   BooleanTrue().codegen(ctx)->dump();
   BooleanFalse().codegen(ctx)->dump();
