@@ -31,8 +31,10 @@ class NameRef: public AST {
  private:
   std::string name;
   AST *resolved = nullptr;
-}
 };
+
+}
+}
 
 
 #endif //KALEIDO_AST_HPP
