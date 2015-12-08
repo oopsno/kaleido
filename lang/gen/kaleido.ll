@@ -74,7 +74,14 @@ semi    ;
 "module" { RET_TK(make_MODULE); }
 "return" { RET_TK(make_RET);    }
 "if"     { RET_TK(make_IF);     }
-"else"   { RET_TK(make_ELSE);   }
+"char"   { RET_TK(make_I8);     }
+"i8"     { RET_TK(make_I8);     }
+"i16"    { RET_TK(make_I16);    }
+"i32"    { RET_TK(make_I32);    }
+"i64"    { RET_TK(make_I64);    }
+"half"   { RET_TK(make_F16);    }
+"float"  { RET_TK(make_F32);    }
+"double" { RET_TK(make_F64);    }
 
 %{
 #undef RET_TK

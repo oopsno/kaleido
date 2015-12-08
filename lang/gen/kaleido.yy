@@ -73,6 +73,13 @@ class KaleidoDriver;
     RET     "return"
     IF      "if"
     ELSE    "else"
+    I8      "i8"
+    I16     "i16"
+    I32     "i32"
+    I64     "i64"
+    F16     "half"
+    F32     "float"
+    F64     "double"
 ;
 
 %token <std::string> NAME
@@ -83,7 +90,9 @@ class KaleidoDriver;
 %token <bool>        FALSE
 
 %type <Arithmetic*> ar;
-%type <Boolean*> bool;
+%type <Boolean*>    bool;
+%type <Type*>       type;
+%type <AST*>        ;
 
 %%
 
@@ -188,9 +197,16 @@ ar : FLOAT   { $$ = new Immediate<double>($1);  }
    | ar "^" ar  { $$ = new BinaryArithmeticOperate(op::EXP, $1, $3); }
    | "(" ar ")"  { $$ = $2; }
 
-name : NAME
+name : NAME    { $$ = NameRef($1); }
 
-type : CAPNAME
+type : I8      { $$ = new Int8();      }
+     | I16     { $$ = new Int16();     }
+     | I32     { $$ = new Int32();     }
+     | I64     { $$ = new Int64();     }
+     | F16     { $$ = new Half();      }
+     | F32     { $$ = new Float();     }
+     | F64     { $$ = new Double();    }
+     | CAPNAME { $$ = new TypeRef($1); }
 
 %%
 
