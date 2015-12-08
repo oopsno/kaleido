@@ -3,6 +3,7 @@
 
 #include "context.hpp"
 #include "location.hh"
+#include <string>
 
 namespace kaleido {
 namespace ast {
@@ -20,7 +21,18 @@ class AST {
   location loc;
 };
 
+class NameRef: public AST {
+ public:
+  NameRef();
+  NameRef(std::string &);
+  virtual void dump(size_t indent = 0);
+  virtual llvm::Value *codegen(codegen::Context &);
+  void on_found(AST *);
+ private:
+  std::string name;
+  AST *resolved = nullptr;
 }
-}
+};
+
 
 #endif //KALEIDO_AST_HPP

@@ -25,5 +25,27 @@ void AST::set_reduce_location(const location &loc) {
   this->loc = loc;
 }
 
+NameRef::NameRef() { }
+
+NameRef::NameRef(std::string &name)
+    : name(name) { }
+
+llvm::Value *NameRef::codegen(codegen::Context &ctx) {
+  return resolved->codegen(ctx);
+}
+
+void NameRef::dump(size_t indent) {
+  if (resolved != nullptr) {
+    resolved->dump(indent);
+  } else {
+    print_line("node: NameRef", indent);
+    print_line("value: Unsolved", indent);
+  }
+}
+
+void NameRef::on_found(AST *ast) {
+  resolved = ast;
+}
+
 }
 }
