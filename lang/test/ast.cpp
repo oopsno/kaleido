@@ -1,5 +1,7 @@
 #include "ast/arithmetic.hpp"
 #include "ast/bool.hpp"
+#include "ast/type.hpp"
+#include "ast/statement.hpp"
 
 using namespace kaleido::ast;
 
@@ -20,5 +22,8 @@ int main() {
   cmp_f->codegen(ctx)->dump();
   BBO *bbo_t = new BBO(op::XOR, cmp_f, cmp_t);
   bbo_t->codegen(ctx)->dump();
+  std::string name = "name";
+  Assign *assign = new Assign(name, addfi);
+  assign->codegen(ctx)->dump();
   return 0;
 }
