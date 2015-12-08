@@ -12,6 +12,10 @@ using llvm::CmpInst;
 
 CmpInst::Predicate fcmp(BinaryOperator);
 CmpInst::Predicate icmp(BinaryOperator);
+llvm::Instruction::BinaryOps fbinop(BinaryOperator);
+llvm::Instruction::BinaryOps ibinop(BinaryOperator);
+
+
 
 }
 }

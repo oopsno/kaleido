@@ -23,6 +23,39 @@ static CmpInst::Predicate icmp_table[] = {
     CmpInst::Predicate::ICMP_NE,
 };
 
+static llvm::Instruction::BinaryOps fbinop_table[]{
+    llvm::Instruction::BinaryOps::FAdd,
+    llvm::Instruction::BinaryOps::FSub,
+    llvm::Instruction::BinaryOps::FMul,
+    llvm::Instruction::BinaryOps::FDiv,
+    llvm::Instruction::BinaryOps::FDiv,
+    llvm::Instruction::BinaryOps::FRem
+};
+
+static llvm::Instruction::BinaryOps ibinop_table[]{
+    llvm::Instruction::BinaryOps::Add,
+    llvm::Instruction::BinaryOps::Sub,
+    llvm::Instruction::BinaryOps::Mul,
+    llvm::Instruction::BinaryOps::SDiv,
+    llvm::Instruction::BinaryOps::SDiv,
+    llvm::Instruction::BinaryOps::SRem
+};
+
+llvm::Instruction::BinaryOps fbinop(BinaryOperator op) {
+  if (op < ast::op::ADD || op > ast::op::MOD) {
+    throw std::out_of_range("BinaryOperator to CmpInst::Predicate: Out of range");
+  } else {
+    return fbinop_table[op - ast::op::ADD];
+  }
+}
+llvm::Instruction::BinaryOps ibinop(BinaryOperator op) {
+  if (op < ast::op::ADD || op > ast::op::MOD) {
+    throw std::out_of_range("BinaryOperator to CmpInst::Predicate: Out of range");
+  } else {
+    return ibinop_table[op - ast::op::ADD];
+  }
+}
+
 CmpInst::Predicate fcmp(BinaryOperator op) {
   if (op < ast::op::GT || op > ast::op::NE) {
     throw std::out_of_range("BinaryOperator to CmpInst::Predicate: Out of range");
