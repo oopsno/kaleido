@@ -1,5 +1,5 @@
 %skeleton "lalr1.cc"
-
+ 
 %defines
 %define parser_class_name { KaleidoParser }
 %define api.namespace { kaleido::parser }
@@ -90,10 +90,30 @@ class KaleidoDriver;
 %token <bool>        TRUE
 %token <bool>        FALSE
 
-%type <Arithmetic*> ar;
-%type <Boolean*>    bool;
-%type <Type*>       type;
-%type <AST*>        name;
+%type <Statement*>   top_level;
+%type <ModuleImport*> imp;
+%type <ModuleDefinition*> modef;
+%type <std::string> module_name
+%type <Function*>    defun;
+%type < std::vector<Statement*>* > stmt_list;
+%type < std::vector<Statement*>* > top_level_list;
+%type < std::vector<Declaration*>* > var_decl_list;
+%type < std::vector<Assign*>* > assign_list; 
+%type <Statement*> stmt;
+%type <Declaration*> var_decl; 
+%type <Declaration*> var_def; 
+%type <Loop*> loop;
+%type <If*> cond;
+%type <Block*> block;
+%type <Assign*>      assign;
+%type <Arithmetic*>  ar;
+%type <Boolean*>     bool;
+%type <Type*>        type;
+/* %type <NameRef*>     name; */
+%type <AST*>         expr;
+%type <RVal*>        tuple;
+%type < std::vector<AST*>* > expr_list;
+%type <Statement*>   return;
 
 %%
 
@@ -106,67 +126,83 @@ class KaleidoDriver;
 %precedence UNARY;
 %right "^";
 
-%start top_level;
+%start kaleido;
+
+kaleido : modef top_level_list { driver.result = new Module($1, $2); }
+        | top_level_list { driver.result = new Module($1); }
 
 /* top-level statements */
-top_level : defun
-          | stmt
-          | modef  
-          | imp  
+top_level_list : top_level_list top_level { $$ = $1; $$->push_back($2); }
+               | top_level { $$ = new std::vector<Statement *>(); $$->push_back($1); }
+
+top_level : defun { $$ = $1; } 
+          | stmt  { $$ = $1; }
+          | imp   { $$ = $1; }
 
 /* module */
-modef : "module" module_name
+modef : "module" module_name { $$ = new ModuleDefinition($2); }
 
 /* import */
-imp : "import" module_name
+imp : "import" module_name { $$ = new ModuleImport($2); }
 
-module_name : CAPNAME
-            | module_name "." CAPNAME
+module_name : CAPNAME { $$ = $1; }
+            | module_name "." CAPNAME { $$ = $1 + "." + $3; }
 
 /* function */
-defun : type name "(" var_decl_list ")" func_body
-      | type name "(" ")" func_body
+defun : type NAME "(" var_decl_list ")" block { $$ = new Function($1, $2, $4, $6); }
+      | type NAME "(" ")" block { $$ = new Function($1, $2, $5); }
 
-func_body : "{" "}"
-          | "{" stmt_list "}"
+var_decl : type NAME { $$ = new Declaration($1, $2); }
 
-var_decl : type name
-
-var_decl_list : var_decl
-              | var_decl_list "," var_decl
+var_decl_list : var_decl { $$ = new std::vector<Declaration*>(); $$->push_back($1); }
+              | var_decl_list "," var_decl { $1->push_back($3); $$ = $1; }
 
 /* loop */
-loop : FOR name FROM ar TO ar STEP ar block
-     | FOR name FROM ar TO ar block
+loop : FOR NAME FROM ar TO ar STEP ar stmt { $$ = new Loop($2, $4, $6, $8, $9); }
+     | FOR NAME FROM ar TO ar stmt { $$ = new Loop($2, $4, $6, $7); }
 
 /* statement */
-stmt : assign
-     | var_def
-     | loop
-     | block
-     | cond
+stmt : assign   { $$ = $1; }
+     | var_decl { $$ = $1; }
+     | var_def  { $$ = $1; }
+     | loop     { $$ = $1; }
+     | block    { $$ = $1; }
+     | cond     { $$ = $1; }
+     | return   { $$ = $1; }
+     | expr     { $$ = new Expression($1); }
 
-stmt_list : stmt
-          | stmt_list stmt
+return : "return" expr { $$ = new Return($2); }
 
-block : "{" stmt_list "}"
+stmt_list : stmt { $$ = new std::vector<Statement*>(); $$->push_back($1); }
+          | stmt_list stmt { $1->push_back($2); $$ = $1; }
 
-/* assign */
-assign : name "=" ar
+block : "{" stmt_list "}" { $$ = new Block($2); }
 
 /* variable define */
-var_def : type var_def_list
+var_def : type assign_list  { $$ = new Declaration($1, $2); }
 
-var_def_list : assign
-             | name
-             | var_def "," assign
-             | var_def "," name
+assign_list : assign { $$ = new std::vector<Assign*>(); $$->push_back($1); }
+            | assign_list "," assign { $1->push_back($3); $$ = $1; }
+
+/* assign */
+assign : NAME "=" expr { $$ = new Assign($1, $3); }
 
 /* if-else */
 %precedence "if";
 %precedence "else";
-cond : "if" bool stmt
-     | "if" bool stmt "else" stmt;
+cond : "if" bool stmt { $$ = new If($2, $3); }
+     | "if" bool stmt "else" stmt { $$ = new If($2, $3, $5); }
+
+/* expr */
+expr : ar    { $$ = $1; }
+     | bool  { $$ = $1; }
+     | tuple { $$ = $1; }
+
+expr_list : expr { $$ = new std::vector<AST*>(); $$->push_back($1); }
+          | expr_list "," expr { $1->push_back($3); $$ = $1; }
+          | %empty { $$ = new std::vector<AST*>(); }
+
+tuple : "(" expr_list ")" { $$ = new Tuple($2); }
 
 /* boolexp */
 bool : TRUE  { $$ = new BooleanTrue(); }
@@ -195,10 +231,11 @@ ar : FLOAT   { $$ = new Immediate<double>($1);  }
    | ar "//" ar { $$ = new BinaryArithmeticOperate(op::IDIV, $1, $3); }
    | "+" ar %prec UNARY { $$ = $2; }
    | "-" ar %prec UNARY { $$ = new UnaryArithmeticOperate(op::NEGATE, $2); }
-   | ar "^" ar  { $$ = new BinaryArithmeticOperate(op::EXP, $1, $3); }
-   | "(" ar ")"  { $$ = $2; }
+   | ar "^" ar    { $$ = new BinaryArithmeticOperate(op::EXP, $1, $3); }
+   | "(" ar ")"   { $$ = $2; }
+   | NAME "(" expr_list ")" { $$ = new Call($1, $3); }
 
-name : NAME    { $$ = NameRef($1); }
+/* name : NAME    { $$ = NameRef($1); } */
 
 type : I1      { $$ = new Int1();      }
      | I8      { $$ = new Int8();      }

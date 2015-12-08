@@ -15,8 +15,8 @@
 
 %option noyywrap nounput batch debug noinput
 
-name    [a-z][a-zA-Z_0-9]*(\?|!)?'+
-capname [a-zA-Z][a-zA-Z_0-9]*
+name    [a-z][a-zA-Z_0-9]*(\?|!)?
+capname [A-Z][a-zA-Z_0-9]*
 int     [0-9]+
 float   [0-9]+\.[0-9]+
 blank   [ \t]
@@ -46,10 +46,11 @@ semi    ;
 "-"      { RET_TK(make_MINUS);  }
 "+"      { RET_TK(make_PLUS);   }
 "*"      { RET_TK(make_STAR);   }
-"/"      { RET_TK(make_DIV);  }
-"//"      { RET_TK(make_IDIV);  }
+"/"      { RET_TK(make_DIV);    }
+"//"     { RET_TK(make_IDIV);   }
 "^"      { RET_TK(make_EXP);    }
 "="      { RET_TK(make_ASSIGN); }
+"is"     { RET_TK(make_ASSIGN); }
 "("      { RET_TK(make_LPAREN); }
 ")"      { RET_TK(make_RPAREN); }
 "{"      { RET_TK(make_LBRACE); }
