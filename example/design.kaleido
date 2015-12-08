@@ -1,0 +1,13 @@
+module Kaleido
+
+i64 fib(i64 i) {
+    if i < 1
+        return 0
+    else
+        return fib(i - 1) + fib(i - 2)
+}
+
+for x from 1 to 15 step 1 {
+    color = (x*5, x*5, x*5)
+    draw(x, fib(x))
+}
