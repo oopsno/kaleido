@@ -11,6 +11,7 @@ namespace ast {
 
 class Type {
  public:
+  virtual ~Type();
   virtual std::string to_string() const = 0;
   virtual llvm::Type *gentype(codegen::Context &ctx) const = 0;
   virtual bool is_primitive() const = 0;

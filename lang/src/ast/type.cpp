@@ -4,6 +4,8 @@
 namespace kaleido {
 namespace ast {
 
+Type::~Type() { }
+
 Array::Array() { }
 
 Array::Array(Type *element_type, size_t length)
