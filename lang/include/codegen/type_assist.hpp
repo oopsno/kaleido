@@ -18,6 +18,15 @@ llvm::Type *ir_type_from<double>(codegen::Context &ctx);
 template<>
 llvm::Type *ir_type_from<int64_t>(codegen::Context &ctx);
 
+template<>
+llvm::Type *ir_type_from<bool>(codegen::Context &ctx);
+
+llvm::Type *rel_promote(llvm::Type *lhs, llvm::Type *rhs);
+
+llvm::Value *type_cast(llvm::Type *, llvm::Value *, Context &);
+
+llvm::Value *balance_type(llvm::Value *lhs, llvm::Value *rhs, llvm::BasicBlock *block, codegen::Context &ctx);
+
 }
 }
 
