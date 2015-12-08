@@ -24,6 +24,8 @@ class PrimitiveInteger: public Type {
   }
   virtual llvm::Type *gentype(codegen::Context &ctx) const {
     switch (bits) {
+      case 1:
+        return llvm::Type::getInt1Ty(ctx.llvm_context);
       case 8:
         return llvm::Type::getInt8Ty(ctx.llvm_context);
       case 16:
@@ -67,6 +69,7 @@ class PrimitiveFloat: public Type {
 typedef PrimitiveFloat<16> Half;
 typedef PrimitiveFloat<32> Float;
 typedef PrimitiveFloat<64> Double;
+typedef PrimitiveInteger<1> Int1;
 typedef PrimitiveInteger<8> Int8;
 typedef PrimitiveInteger<16> Int16;
 typedef PrimitiveInteger<32> Int32;

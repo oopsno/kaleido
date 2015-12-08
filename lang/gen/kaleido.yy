@@ -73,6 +73,7 @@ class KaleidoDriver;
     RET     "return"
     IF      "if"
     ELSE    "else"
+    I1      "i1"
     I8      "i8"
     I16     "i16"
     I32     "i32"
@@ -92,7 +93,7 @@ class KaleidoDriver;
 %type <Arithmetic*> ar;
 %type <Boolean*>    bool;
 %type <Type*>       type;
-%type <AST*>        ;
+%type <AST*>        name;
 
 %%
 
@@ -199,7 +200,8 @@ ar : FLOAT   { $$ = new Immediate<double>($1);  }
 
 name : NAME    { $$ = NameRef($1); }
 
-type : I8      { $$ = new Int8();      }
+type : I1      { $$ = new Int1();      }
+     | I8      { $$ = new Int8();      }
      | I16     { $$ = new Int16();     }
      | I32     { $$ = new Int32();     }
      | I64     { $$ = new Int64();     }

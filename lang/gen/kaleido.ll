@@ -74,6 +74,8 @@ semi    ;
 "module" { RET_TK(make_MODULE); }
 "return" { RET_TK(make_RET);    }
 "if"     { RET_TK(make_IF);     }
+"bool"   { RET_TK(make_I1);     }
+"i1"     { RET_TK(make_I1);     }
 "char"   { RET_TK(make_I8);     }
 "i8"     { RET_TK(make_I8);     }
 "i16"    { RET_TK(make_I16);    }
