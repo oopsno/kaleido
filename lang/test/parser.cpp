@@ -6,6 +6,8 @@ using namespace kaleido;
 
 int main() {
   parser::KaleidoDriver driver;
-  driver.parse_file("/tmp/test.kaleido");
+//  driver.parse_file("example/classic.kaleido");
+  driver.parse_file("example/design.kaleido");
+  driver.result->dump();
   return 0;
 }
