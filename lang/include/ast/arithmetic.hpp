@@ -67,8 +67,8 @@ class BAO: public Arithmetic {
   virtual llvm::Value *codegen(codegen::Context &);
  private:
   op::BinaryOperator bop = op::UNDEFINED_BINARY_OPERATOR;
-  Arithmetic *lhs;
-  Arithmetic *rhs;
+  Arithmetic *lhs = nullptr;
+  Arithmetic *rhs = nullptr;
 };
 typedef BAO BinaryArithmeticOperate;
 
@@ -81,7 +81,7 @@ class UAO: public Arithmetic {
   virtual llvm::Value *codegen(codegen::Context &);
  private:
   op::UnaryOperator uop = op::UNDEFINED_UNARY_OPERATOR;
-  Arithmetic *arithmetic;
+  Arithmetic *arithmetic = nullptr;
 };
 typedef UAO UnaryArithmeticOperate;
 
