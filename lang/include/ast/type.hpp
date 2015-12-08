@@ -106,6 +106,19 @@ class Pointer: public Type {
   Type *target_type = nullptr;
 };
 
+class TypeRef: public Type {
+ public:
+  TypeRef();
+  TypeRef(std::string &name);
+  virtual std::string to_string() const;
+  virtual llvm::Type *gentype(codegen::Context &ctx) const;
+  virtual bool is_primitive() const;
+  void on_found(Type *type);
+ private:
+  std::string name;
+  Type *resolved = nullptr;
+};
+
 }
 }
 

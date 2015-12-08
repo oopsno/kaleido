@@ -74,5 +74,26 @@ bool Pointer::is_primitive() const {
   return true;
 }
 
+TypeRef::TypeRef() { }
+
+TypeRef::TypeRef(std::string &name)
+    : name(name) { }
+
+bool TypeRef::is_primitive() const {
+  return resolved and resolved->is_primitive();
+}
+
+llvm::Type *TypeRef::gentype(codegen::Context &ctx) const {
+  return resolved->gentype(ctx);
+}
+
+std::string TypeRef::to_string() const {
+  return resolved->to_string();
+}
+
+void TypeRef::on_found(Type *type) {
+  resolved = type;
+}
+
 }
 }
