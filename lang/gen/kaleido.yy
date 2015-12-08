@@ -83,6 +83,7 @@ class KaleidoDriver;
 %token <bool>        FALSE
 
 %type <Arithmetic*> ar;
+%type <Boolean*> bool;
 
 %%
 
@@ -158,18 +159,20 @@ cond : "if" bool stmt
      | "if" bool stmt "else" stmt;
 
 /* boolexp */
-bool : TRUE
-     | FALSE
-     | ar "<"  ar
-     | ar ">"  ar
-     | ar "=>" ar
-     | ar "<=" ar
-     | ar "==" ar
-     | bool "and" bool
-     | bool "or"  bool
-     | bool "xor" bool
-     | "not" bool %prec UNARY
-     | "(" bool ")"
+bool : TRUE  { $$ = new BooleanTrue(); }
+     | FALSE { $$ = new BooleanFalse(); }
+     | ar    { $$ = new Nonzero($1); }
+     | ar "<"  ar { $$ = new Compare(op::LT, $1, $3); }
+     | ar ">"  ar { $$ = new Compare(op::GT, $1, $3); }
+     | ar "=>" ar { $$ = new Compare(op::GE, $1, $3); }
+     | ar "<=" ar { $$ = new Compare(op::LE, $1, $3); } 
+     | ar "==" ar { $$ = new Compare(op::EQ, $1, $3); } 
+     | ar "!=" ar { $$ = new Compare(op::NE, $1, $3); } 
+     | bool "and" bool { $$ = new BBO(op::AND, $1, $3); }
+     | bool "or"  bool { $$ = new BBO(op::OR,  $1, $3); }
+     | bool "xor" bool { $$ = new BBO(op::XOR, $1, $3); }
+     | "not" bool %prec UNARY { $$ = new UBO(op::NOT, $2); }
+     | "(" bool ")" { $$ = $2; }
 
 /* ar[ithmetic] */
 ar : FLOAT   { $$ = new Immediate<double>($1);  }
