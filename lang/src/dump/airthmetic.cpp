@@ -26,5 +26,15 @@ void UAO::dump(size_t indent) {
   print_line("value: ", indent);
   arithmetic->dump(indent);
 }
+
+void Call::dump(size_t indent) {
+  print_line("node: Call", indent);
+  print_line("functoin: " + name, indent);
+  print_line("arguments:", indent);
+  for (auto arg : *argument) {
+    arg->dump(indent + 2);
+  }
+}
+
 }
 }

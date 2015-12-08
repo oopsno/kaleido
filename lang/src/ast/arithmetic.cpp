@@ -34,5 +34,10 @@ UAO::~UAO() {
     delete (arithmetic);
 }
 
+Call::Call() { }
+
+Call::Call(std::string &name, std::vector<AST *> *arguments)
+    : name(name), argument(arguments) { }
+
 }
 }

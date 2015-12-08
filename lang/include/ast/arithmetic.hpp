@@ -85,6 +85,16 @@ class UAO: public Arithmetic {
 };
 typedef UAO UnaryArithmeticOperate;
 
+class Call: public Arithmetic {
+ public:
+  Call();
+  Call(std::string &name, std::vector<AST *> *arguments);
+  virtual void dump(size_t indent = 0);
+  virtual llvm::Value *codegen(codegen::Context &);
+  std::string name;
+  std::vector<AST *> *argument = nullptr;
+};
+
 }
 }
 

@@ -36,5 +36,9 @@ llvm::Value *UAO::codegen(codegen::Context &ctx) {
   }
 }
 
+llvm::Value* Call::codegen(codegen::Context &ctx) {
+  return nullptr;
+}
+
 }
 }
