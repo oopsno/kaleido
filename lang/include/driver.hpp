@@ -16,7 +16,7 @@ class KaleidoDriver {
  public:
   KaleidoDriver();
   virtual ~KaleidoDriver();
-  ast::AST *result;
+  ast::AST *result = nullptr;
   void scan_begin();
   void scan_end();
   bool trace_scanning;
